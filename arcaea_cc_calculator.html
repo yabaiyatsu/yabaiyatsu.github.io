@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="[~] wikitestform.css">
+    <title>Arcaea Chart Constant Calculator</title>
+</head>
+<body>
+
+<h1>Arcaea Chart Constant Calculator</h1>
+
+<hr/>
+
+<p>Chart level:</p>
+<div class="rb-container" id="input-lv">
+</div>
+
+<p>Partner STEP stat: &nbsp;
+    <input type="number" id="input-stepstat" name="stepstat" min="50" max="310" step="1" value="160"/><br/>
+<span class="note">(pick a high STEP Partner; avoid Partners that give map progress bonuses, e.g. Mithra)</span></p>
+
+<p>Stamina boost (Legacy Play+ only):</p >
+<div class="rb-container" id="input-stam">
+    <div class="rb">
+        <label><input type="radio" name="stam" value="1" checked="y"> x 1</label>
+    </div>
+    <div class="rb">
+        <label><input type="radio" name="stam" value="2"> x 2</label>
+    </div>
+    <div class="rb">
+        <label><input type="radio" name="stam" value="4"> x 4</label>
+    </div>
+    <div class="rb">
+        <label><input type="radio" name="stam" value="6"> x 6</label>
+    </div>
+</div>
+
+<p>Fragment boost (Legacy Play+ only):
+<div class="rb-container" id="input-frag">
+    <div class="rb">
+        <label><input type="radio" name="frag" value="1" checked="y"> x 1</label>
+    </div>
+    <div class="rb">
+        <label><input type="radio" name="frag" value="1.1"> x 1.1</label>
+    </div>
+    <div class="rb">
+        <label><input type="radio" name="frag" value="1.25"> x 1.25</label>
+    </div>
+    <div class="rb">
+        <label><input type="radio" name="frag" value="1.5"> x 1.5</label>
+    </div>
+</div></p>
+
+<hr/>
+
+<p>Minimum required score: &nbsp;
+    <span class="minscorereq" id="minscorereq">0'000'000</span><br/>
+    <span class="note">(calculator gives invalid results if
+        play score is lower than this;
+    aim for a score slightly higher but not too much higher)</span></p>
+
+<p>Final play score: &nbsp;<input type="number" id="input-score" name="score" value="9900000"/></p>
+
+<p>Total map progress: &nbsp;<input type="number" id="input-mapsteps" name="mapsteps" value="33.2"/></p>
+
+<p class="advanced">(Advanced options)<br/>
+Map progress lower error: &nbsp;<input type="number" id="input-errl" name="errl" value="0"/><br/>
+Map progress upper error: &nbsp;<input type="number" id="input-erru" name="erru" value="0.1"/></p>
+
+<p class="calc-input"><button type="button" id="calc-button" class="calc-button" onclick="updateCCs()">Estimate chart constant</button></p>
+
+<hr/>
+<p>Minimum chart constant = <span class="cc-est" id="ccmin"></span><br/>
+Maximum chart constant = <span class="cc-est" id="ccmax"></span><br/>
+Estimated minimum chart constant = <span class="cc-estround" id="ccminrnd"></span><br/>
+Estimated maximum chart constant = <span class="cc-estround" id="ccmaxrnd"></span>
+<span class="errormsg" id="calcerror"></span></p>
+
+<hr/>
+<p class="credits">by <a href="https://arcaea.fandom.com/wiki/User:ArcaeaiL">YabaiYatsu</a></p>
+
+
+<script>
+    const lvccs = [ '1', '2', '3', '4', '5', '6', '7',
+                    '8', '9', '9.7', '10', '10.7', '11', '12'];
+
+    // generate radio groups for chart level
+    const lvdiv = document.getElementById("input-lv");
+    lvdiv.innerHTML = '\n\t' + lvccs.map((lvcc) => `<div class="rb">\n`
+        + `\t\t<label><input type="radio" name="lvcc" value="${lvcc}"> ${ccToLv(lvcc)}</label>\n\t</div>`).join('\n\t') + '\n';
+    
+    // event listener for chart level change event
+    const radioButtons = document.querySelectorAll('input[name="lvcc"]');
+    for(const radioButton of radioButtons){
+        radioButton.addEventListener('change', updateLevel);
+    }
+    
+
+    function ccToLv(cc) {
+        if (cc.includes('.')) {
+            let baselv = parseInt(cc);
+            let lvdp = parseInt(cc.split('.')[0]);
+            if (lvdp >= 7) {
+                return parseInt(cc) + '+';
+            } else {
+                return cc;  
+            }          
+        } else {
+            return cc;
+        }   
+    }
+
+    function ccToMinScore(cc) {
+        let sm = -parseFloat(cc);
+        let sc = 0;
+        if (sm >= 2) {
+            sc = 10000000;
+        } else if (sm >= 1) {
+            sc = (sm-1)*200000 + 9800000;
+        } else {
+            sc = sm*300000 + 9500000;
+        }
+        return parseInt(sc);
+    }
+
+    function scoreToScoreMod(sc) {
+        if (sc >= 10000000) {
+            return 2;
+        } else if (sc > 9800000) {
+            return 1 + (sc-9800000)/200000;
+        } else {
+            return (sc-9500000)/300000;
+        }
+    }
+
+    function scoreDisp(score) {
+        let mill = Math.floor(score/1000000);
+        let thou = Math.floor((score%1000000)/1000);
+        let ones = score%1000;
+        return mill + "'" + String(thou).padStart(3,'0') + "'" + String(ones).padStart(3,'0');
+    }
+
+    function updateLevel(e) {
+        console.log(e);
+        if (this.checked) {
+            document.getElementById('minscorereq').innerText = `${scoreDisp(ccToMinScore(this.value))}`;
+        }
+    }
+
+
+    const minccel = document.getElementById("ccmin");
+    const maxccel = document.getElementById("ccmax");
+    const minccrndel = document.getElementById("ccminrnd");
+    const maxccrndel = document.getElementById("ccmaxrnd");
+
+    function updateCCs() {
+        var stepstat = parseInt(document.getElementById("input-stepstat").value);
+        var stamboost = parseInt(document.querySelector('input[name="stam"]:checked').value);
+        var fragboost = parseFloat(document.querySelector('input[name="frag"]:checked').value);
+        var score = parseInt(document.getElementById("input-score").value);
+        var mapsteps = parseFloat(document.getElementById("input-mapsteps").value);
+        var errl = parseFloat(document.getElementById("input-errl").value);
+        var erru = parseFloat(document.getElementById("input-erru").value);
+
+        let stepmult = stamboost * fragboost * stepstat/50;
+        let minccout = calcCC(mapsteps-errl, score, stepmult);
+        let maxccout = calcCC(mapsteps+erru, score+1, stepmult);
+        minccel.innerText = minccout.toFixed(3);
+        maxccel.innerText = maxccout.toFixed(3);
+        minccrndel.innerText = (Math.ceil(minccout*10)/10).toFixed(1);
+        maxccrndel.innerText = (Math.floor(maxccout*10)/10).toFixed(1);
+    }
+
+    function calcCC(mapsteps, score, stepmult) {
+        let stepbase = mapsteps/stepmult;
+        let playrating = ((stepbase-2.5)/2.45)**2;
+        return playrating - scoreToScoreMod(score);
+    }
+</script>
+
+</body>
+</html>

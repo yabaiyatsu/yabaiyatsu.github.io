@@ -1,0 +1,56 @@
+body {
+	font-family: Arial, sans-serif;
+    max-width: 24em;
+    width: 24em;
+    margin: auto;
+    margin-bottom: 60px;
+}
+
+h1 {
+	text-align: center;
+}
+/*.maindiv {
+    max-width: 24em;
+    width: 24em;
+}*/
+
+.rb-container {
+    column-count: 4;
+}
+
+input[type='number']{
+    width: 6em;
+    font-size: 1em;
+    appearance: textfield;
+}
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+}
+
+.minscorereq {
+	font-size: 1.5em;
+}
+
+.calc-input {
+
+}
+
+.calc-button {
+    margin: auto;
+    font-size: 1.2em;
+}
+
+.credits {
+	text-align: center;
+}
+
+.advanced {
+	color: gray;
+	font-size: 0.9em;
+}
+
+.note {
+	font-size: 0.8em;
+	color: gray;
+}
