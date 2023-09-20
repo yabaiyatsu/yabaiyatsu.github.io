@@ -6,13 +6,13 @@ body {
     margin-bottom: 60px;
 }
 
+.hidden {
+    display: none;
+}
+
 h1 {
 	text-align: center;
 }
-/*.maindiv {
-    max-width: 24em;
-    width: 24em;
-}*/
 
 .rb-container {
     column-count: 4;
@@ -57,9 +57,6 @@ input[type='checkbox']{
 	font-size: 0.8em;
 	color: gray;
 /*    margin-bottom: 0.5em;*/
-}
-.notehidden {
-    display: none;
 }
 
 details > summary {

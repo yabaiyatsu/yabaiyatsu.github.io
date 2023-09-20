@@ -16,11 +16,13 @@ Chart level:
 </div>
 
 <p>Partner STEP stat: &nbsp;
-    <input type="number" id="input-partnerstep" name="stepstat" min="50" max="310" step="1" value="90"><br>
+    <input type="number" id="input-partnerstep" name="stepstat" min="50" max="310" step="1" value="160"><br>
     <span class="note">(including STEP bonuses from Partner skill, e.g. Mika Yurisaki)<br></span>
-    <label><input type="checkbox" id="input-partnerlv" name="highlv"> Partner Lv 20-30</label><br>
+    <label><input type="checkbox" id="input-partnerlv" name="highlv" checked="y"> Partner Lv 20-30</label><br>
     <label><input type="checkbox" id="input-partnernonmax" name="nonmax"> Non-maxed Tairitsu (Tempest) / Hikari (Fatalis)</label>
-    <span class="note"><br>Tips: choose a Partner with high STEP. Avoid Partners that change the score display (e.g. Lagrange, Awakened Lethe)</span>
+    <span class="note"><br>Tips: choose a Partner with high STEP.<br>
+    HARD skill Partners are recommended since songs can be failed early after achieving the required score (see below), and without hurting player Potential.<br>
+    Avoid Partners that change the score display (e.g. Lagrange, Awakened Lethe).</span>
 </p>
 
 <details><summary>Legacy Play+ map boosts
@@ -63,7 +65,8 @@ Fragment boost:
 <p>Minimum required score: &nbsp;
     <span class="minscorereq" id="minscorereq">0'000'000</span>
     <span class="note"><br>Note: calculator gives invalid results if play score is lower than this.<br>
-    Aim for a score no more than ~500'000 higher (very high STEP Partners (&ge;150) and Legacy map boosted plays have leeway to achieve higher scores).</span></p>
+    Aim for a score no more than ~500'000 higher (very high STEP Partners (&ge;150) and Legacy map boosted plays have leeway to achieve higher scores).<br>
+    </span></p>
 
 <p>Final play score: &nbsp;<input type="number" id="input-score" name="score" value="9993531"></p>
 
@@ -104,6 +107,7 @@ Estimated maximum chart constant = <span class="cc-estround" id="ccmaxrnd"></spa
 <p class="credits">by <a href="..">YabaiYatsu</a></p>
 
 
+
 <script>
     // show/hide notes
     const declutterButton = document.getElementById("input-declutter");
@@ -112,15 +116,16 @@ Estimated maximum chart constant = <span class="cc-estround" id="ccmaxrnd"></spa
         console.log(e);
         const notesAll = document.getElementsByClassName('note');
         for(const noteEl of notesAll){
-            noteEl.classList.toggle("notehidden");
+            noteEl.classList.toggle("hidden");
         }
     }
     window.addEventListener("load", declutterNotes);
 
+
+    // generate radio groups for chart level
     const lvCCs = [ '1', '2', '3', '4', '5', '6', '7',
                     '8', '9', '9.7', '10', '10.7', '11', '12'];
 
-    // generate radio groups for chart level
     const minScoreDiv = document.getElementById("input-lv");
     minScoreDiv.innerHTML = '\n\t' + lvCCs.map((lvcc) => `<div class="rb">\n`
         + `\t\t<label><input type="radio" name="lvcc" value="${lvcc}"> ${ccToLv(lvcc)}</label>\n\t</div>`).join('\n\t') + '\n';
@@ -131,7 +136,6 @@ Estimated maximum chart constant = <span class="cc-estround" id="ccmaxrnd"></spa
         radioButton.addEventListener('change', updateMinScore);
     }
     
-
     function ccToLv(cc) {
         if (cc.includes('.')) {
             let baseLv = parseInt(cc);
