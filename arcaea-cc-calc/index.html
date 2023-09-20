@@ -8,18 +8,25 @@
 <body>
 
 <h1>Arcaea Chart Constant Calculator</h1>
+<label><input type="checkbox" id="input-declutter" name="declutter"> Show notes/tips</label>
+<hr>
 
-<hr/>
-
-<p>Chart level:</p>
+Chart level:
 <div class="rb-container" id="input-lv">
 </div>
 
 <p>Partner STEP stat: &nbsp;
-    <input type="number" id="input-stepstat" name="stepstat" min="50" max="310" step="1" value="160"/><br/>
-<span class="note">(pick a high STEP Partner; avoid Partners that give map progress bonuses, e.g. Mithra)</span></p>
+    <input type="number" id="input-partnerstep" name="stepstat" min="50" max="310" step="1" value="90"><br>
+    <span class="note">(including STEP bonuses from Partner skill, e.g. Mika Yurisaki)<br></span>
+    <label><input type="checkbox" id="input-partnerlv" name="highlv"> Partner Lv 20-30</label><br>
+    <label><input type="checkbox" id="input-partnernonmax" name="nonmax"> Non-maxed Tairitsu (Tempest) / Hikari (Fatalis)</label>
+    <span class="note"><br>Tips: choose a Partner with high STEP. Avoid Partners that change the score display (e.g. Lagrange, Awakened Lethe)</span>
+</p>
 
-<p>Stamina boost (Legacy Play+ only):</p >
+<details><summary>Legacy Play+ map boosts
+<span class="note">(recommended if available)</span></summary>
+<div>
+Stamina boost:
 <div class="rb-container" id="input-stam">
     <div class="rb">
         <label><input type="radio" name="stam" value="1" checked="y"> x 1</label>
@@ -34,8 +41,7 @@
         <label><input type="radio" name="stam" value="6"> x 6</label>
     </div>
 </div>
-
-<p>Fragment boost (Legacy Play+ only):
+Fragment boost:
 <div class="rb-container" id="input-frag">
     <div class="rb">
         <label><input type="radio" name="frag" value="1" checked="y"> x 1</label>
@@ -49,58 +55,88 @@
     <div class="rb">
         <label><input type="radio" name="frag" value="1.5"> x 1.5</label>
     </div>
-</div></p>
+</div></div>
+</details>
 
-<hr/>
+<hr>
 
 <p>Minimum required score: &nbsp;
-    <span class="minscorereq" id="minscorereq">0'000'000</span><br/>
-    <span class="note">(calculator gives invalid results if
-        play score is lower than this;
-    aim for a score slightly higher but not too much higher)</span></p>
+    <span class="minscorereq" id="minscorereq">0'000'000</span>
+    <span class="note"><br>Note: calculator gives invalid results if play score is lower than this.<br>
+    Aim for a score no more than ~500'000 higher (very high STEP Partners (&ge;150) and Legacy map boosted plays have leeway to achieve higher scores).</span></p>
 
-<p>Final play score: &nbsp;<input type="number" id="input-score" name="score" value="9900000"/></p>
+<p>Final play score: &nbsp;<input type="number" id="input-score" name="score" value="9993531"></p>
 
-<p>Total map progress: &nbsp;<input type="number" id="input-mapsteps" name="mapsteps" value="33.2" step="0.1"/></p>
+<p>Total map progress: &nbsp;<input type="number" id="input-mapprog" name="mapprog" value="18.4" step="0.1">
+    <span class="note"><br>(<em>after</em> Partner Progress multiplier, but
+    <em>not including</em> subsequent map bonuses from Partner skills,
+    e.g. Awakened Luna)</span>
+</p>
 
-<p class="advanced">(Advanced options)<br/>
-Map progress lower error: &nbsp;<input type="number" id="input-errl" name="errl" value="0"/><br/>
-Map progress upper error: &nbsp;<input type="number" id="input-erru" name="erru" value="0.1"/></p>
+<details class="advanced"><summary>Advanced options (rounding errors)</summary>
+<div>
+Map progress error (default setting assumes that the steps displayed in-game have been rounded <em>down</em> to 1 decimal place after calculation):
+<ul>
+    <li>Map progress lower error: &nbsp;<input type="number" id="input-errmpl" name="errmpl" value="0"></li>
+    <li>Map progress upper error: &nbsp;<input type="number" id="input-errmpu" name="errmpu" value="0.1"></li>
+</ul>
+Partner STEP stat error (default setting assumes that STEP values displayed in-game have been rounded <em>down</em> to integer values from the actual STEP stat used in calculations;
+upper error can be set to 0 for <em>fully</em> maxed out Tairitsu GL/Tempest or Hikari Fatalis, or 0.5 for other Lv 20-30 Partners):
+<ul>
+    <li>Partner STEP lower error: &nbsp;<input type="number" id="input-errstpl" name="errstpl" value="0"><br>
+    <li>Partner STEP upper error: &nbsp;<input type="number" id="input-errstpu" name="errstpu" value="1">
+</ul>
+</div></details>
 
-<p class="calc-input"><button type="button" id="calc-button" class="calc-button" onclick="updateCCs()">Estimate chart constant</button></p>
+<button type="button" id="calc-button" class="calc-button" onclick="updateCCs()">
+Estimate chart constant
+</button>
 
-<hr/>
-<p>Minimum chart constant = <span class="cc-est" id="ccmin"></span><br/>
-Maximum chart constant = <span class="cc-est" id="ccmax"></span><br/>
-Estimated minimum chart constant = <span class="cc-estround" id="ccminrnd"></span><br/>
+<hr>
+
+<p>Lower bound on chart constant = <span class="cc-est" id="ccmin"></span><br>
+Upper bound on chart constant = <span class="cc-est" id="ccmax"></span><br>
+Estimated minimum chart constant &nbsp;= <span class="cc-estround" id="ccminrnd"></span><br>
 Estimated maximum chart constant = <span class="cc-estround" id="ccmaxrnd"></span>
 <span class="errormsg" id="calcerror"></span></p>
 
-<hr/>
-<p class="credits">by <a href="https://arcaea.fandom.com/wiki/User:ArcaeaiL">YabaiYatsu</a></p>
+<hr>
+<p class="credits">by <a href="..">YabaiYatsu</a></p>
 
 
 <script>
-    const lvccs = [ '1', '2', '3', '4', '5', '6', '7',
+    // show/hide notes
+    const declutterButton = document.getElementById("input-declutter");
+    declutterButton.addEventListener('change', declutterNotes);
+    function declutterNotes(e) {
+        console.log(e);
+        const notesAll = document.getElementsByClassName('note');
+        for(const noteEl of notesAll){
+            noteEl.classList.toggle("notehidden");
+        }
+    }
+    window.addEventListener("load", declutterNotes);
+
+    const lvCCs = [ '1', '2', '3', '4', '5', '6', '7',
                     '8', '9', '9.7', '10', '10.7', '11', '12'];
 
     // generate radio groups for chart level
-    const lvdiv = document.getElementById("input-lv");
-    lvdiv.innerHTML = '\n\t' + lvccs.map((lvcc) => `<div class="rb">\n`
+    const minScoreDiv = document.getElementById("input-lv");
+    minScoreDiv.innerHTML = '\n\t' + lvCCs.map((lvcc) => `<div class="rb">\n`
         + `\t\t<label><input type="radio" name="lvcc" value="${lvcc}"> ${ccToLv(lvcc)}</label>\n\t</div>`).join('\n\t') + '\n';
     
     // event listener for chart level change event
-    const radioButtons = document.querySelectorAll('input[name="lvcc"]');
-    for(const radioButton of radioButtons){
-        radioButton.addEventListener('change', updateLevel);
+    const radioButtonsChart = document.querySelectorAll('input[name="lvcc"]');
+    for(const radioButton of radioButtonsChart){
+        radioButton.addEventListener('change', updateMinScore);
     }
     
 
     function ccToLv(cc) {
         if (cc.includes('.')) {
-            let baselv = parseInt(cc);
-            let lvdp = parseInt(cc.split('.')[0]);
-            if (lvdp >= 7) {
+            let baseLv = parseInt(cc);
+            let lvDp = parseInt(cc.split('.')[0]);
+            if (lvDp >= 7) {
                 return parseInt(cc) + '+';
             } else {
                 return cc;  
@@ -140,39 +176,78 @@ Estimated maximum chart constant = <span class="cc-estround" id="ccmaxrnd"></spa
         return mill + "'" + String(thou).padStart(3,'0') + "'" + String(ones).padStart(3,'0');
     }
 
-    function updateLevel(e) {
+    function updateMinScore(e) {
         console.log(e);
         if (this.checked) {
             document.getElementById('minscorereq').innerText = `${scoreDisp(ccToMinScore(this.value))}`;
         }
     }
 
+    const minCcEl = document.getElementById("ccmin");
+    const maxCcEl = document.getElementById("ccmax");
+    const minCcRndEl = document.getElementById("ccminrnd");
+    const maxCcRndEl = document.getElementById("ccmaxrnd");
 
-    const minccel = document.getElementById("ccmin");
-    const maxccel = document.getElementById("ccmax");
-    const minccrndel = document.getElementById("ccminrnd");
-    const maxccrndel = document.getElementById("ccmaxrnd");
+    const partnerStepInput = document.getElementById("input-partnerstep");
+    const partnerLvInput = document.getElementById("input-partnerlv");
+    const partnerNonmaxInput = document.getElementById("input-partnernonmax");
+    const errStpUInput = document.getElementById("input-errstpu");
 
+    // event listener to decrease STEP upper error for certain partners
+    partnerStepInput.addEventListener("change", updateStpUError);
+    partnerLvInput.addEventListener("change", updateStpUError);
+    partnerNonmaxInput.addEventListener("change", updateStpUError);
+    const errStpUDefault = 1;
+    const errStpUHighLv = 0.5;
+    const errStpUSpecial = 0;
+
+    function updateStpUError(e) {
+        console.log(e);
+        if (partnerStepInput.value >= 160) {
+            errStpUInput.setAttribute('value', errStpUSpecial);
+        } else if (partnerLvInput.checked && !partnerNonmaxInput.checked) {
+            errStpUInput.setAttribute('value', errStpUHighLv);
+        } else {
+            errStpUInput.setAttribute('value', errStpUDefault);
+        }
+    }
+
+    // event listener to calculate CCs on button press
     function updateCCs() {
-        var stepstat = parseInt(document.getElementById("input-stepstat").value);
+        var stepstat = parseInt(document.getElementById("input-partnerstep").value);
         var stamboost = parseInt(document.querySelector('input[name="stam"]:checked').value);
         var fragboost = parseFloat(document.querySelector('input[name="frag"]:checked').value);
         var score = parseInt(document.getElementById("input-score").value);
-        var mapsteps = parseFloat(document.getElementById("input-mapsteps").value);
-        var errl = parseFloat(document.getElementById("input-errl").value);
-        var erru = parseFloat(document.getElementById("input-erru").value);
+        var mapprog = parseFloat(document.getElementById("input-mapprog").value);
+        var errmpl = parseFloat(document.getElementById("input-errmpl").value);
+        var errmpu = parseFloat(document.getElementById("input-errmpu").value);
+        var errstpl = parseFloat(document.getElementById("input-errstpl").value);
+        var errstpu = parseFloat(document.getElementById("input-errstpu").value);
 
-        let stepmult = stamboost * fragboost * stepstat/50;
-        let minccout = calcCC(mapsteps-errl, score, stepmult);
-        let maxccout = calcCC(mapsteps+erru, score+1, stepmult);
-        minccel.innerText = minccout.toFixed(3);
-        maxccel.innerText = maxccout.toFixed(3);
-        minccrndel.innerText = (Math.ceil(minccout*10)/10).toFixed(1);
-        maxccrndel.innerText = (Math.floor(maxccout*10)/10).toFixed(1);
+        let legacymult = stamboost * fragboost;
+        let mincc = calcCC(mapprog-errmpl, score+1, stepstat+errstpu, legacymult);
+        let maxcc = calcCC(mapprog+errmpu, score, stepstat-errstpl, legacymult);
+        minCcEl.innerText = mincc.toFixed(3);
+        maxCcEl.innerText = (maxcc+0.001).toFixed(3);
+
+        let minccrnd = 0;
+        let maxccrnd = 0;
+        if (mincc < 8) {
+            minccrnd = Math.ceil(mincc*2)/2;
+        } else {
+            minccrnd = Math.ceil(mincc*10)/10;
+        }
+        if (maxcc < 8) {
+            maxccrnd = Math.floor(maxcc*2)/2;
+        } else {
+            maxccrnd = Math.floor(maxcc*10)/10;
+        }
+        minCcRndEl.innerText = minccrnd.toFixed(1);
+        maxCcRndEl.innerText = maxccrnd.toFixed(1);
     }
 
-    function calcCC(mapsteps, score, stepmult) {
-        let stepbase = mapsteps/stepmult;
+    function calcCC(mapprog, score, stepstat, legacymult) {
+        let stepbase = mapprog/legacymult/stepstat*50;
         let playrating = ((stepbase-2.5)/2.45)**2;
         return playrating - scoreToScoreMod(score);
     }
