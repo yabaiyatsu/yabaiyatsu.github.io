@@ -100,8 +100,8 @@ Estimate chart constant
 <p>Lower bound on chart constant = <span class="cc-est" id="ccmin"></span><br>
 Upper bound on chart constant = <span class="cc-est" id="ccmax"></span><br>
 Estimated minimum chart constant &nbsp;= <span class="cc-estround" id="ccminrnd"></span><br>
-Estimated maximum chart constant = <span class="cc-estround" id="ccmaxrnd"></span>
-<span class="errormsg" id="calcerror"></span></p>
+Estimated maximum chart constant = <span class="cc-estround" id="ccmaxrnd"></span></p>
+<p><span class="errormsg" id="calcerror"></span></p>
 
 <hr>
 <p class="credits">2023, by <a href="..">YabaiYatsu</a></p>
@@ -196,6 +196,7 @@ Estimated maximum chart constant = <span class="cc-estround" id="ccmaxrnd"></spa
     const partnerLvInput = document.getElementById("input-partnerlv");
     const partnerNonmaxInput = document.getElementById("input-partnernonmax");
     const errStpUInput = document.getElementById("input-errstpu");
+    const errMsg = document.getElementById("calcerror");
 
     // event listener to decrease STEP upper error for certain partners
     partnerStepInput.addEventListener("change", updateStpUError);
@@ -248,6 +249,14 @@ Estimated maximum chart constant = <span class="cc-estround" id="ccmaxrnd"></spa
         }
         minCcRndEl.innerText = minccrnd.toFixed(1);
         maxCcRndEl.innerText = maxccrnd.toFixed(1);
+
+        if (minccrnd > maxccrnd) {
+            errMsg.innerText = "Invalid min/max estimates. Check your inputs.";
+        } else if (minccrnd < maxccrnd) {
+            errMsg.innerText = "Error margin between lower/upper bounds is too large to determine the chart constant. Try again with a different Partner or lower score (see notes/tips at the top).";
+        } else {
+            errMsg.innerText = "";
+        }
     }
 
     function calcCC(mapprog, score, stepstat, legacymult) {

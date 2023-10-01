@@ -53,6 +53,11 @@ input[type='checkbox']{
     font-size: 0.9em;
 }
 
+.errormsg {
+    color: red;
+    /*font-size: 0.9em;*/
+}
+
 .note {
     font-size: 0.8em;
     color: gray;
