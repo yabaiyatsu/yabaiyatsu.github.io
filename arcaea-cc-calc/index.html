@@ -21,9 +21,11 @@ Chart level:
     <label><input type="checkbox" id="input-partnerlv" name="highlv" checked="y"> Partner Lv 20-30</label><br>
     <label><input type="checkbox" id="input-partnernonmax" name="nonmax"> Non-maxed Tairitsu (Tempest) / Hikari (Fatalis)</label>
     <span class="note"><br>Tips: choose a Partner with high STEP.<br>
-    Note: HARD skill Partners have high are recommended since songs can be failed early after achieving the required score (see below), and without hurting player Potential.<br>
-    High STEP non-HARD Partners are still worth considering, since getting an early Track Lost due to getting distracted by the score isn't an issue, making it easier to achieve scores closer to the minimum threshold score.
-    Avoid Partners that change the score display (e.g. Lagrange, Awakened Lethe).</span>
+    Note: Avoid Partners that change the score display (e.g. Lagrange, Awakened Lethe).<br>
+    HARD skill Partners are recommended since songs can be failed early after achieving the required score (see below), and without hurting player Potential.<br>
+    If dropped Potential isn't a concern, high STEP non-HARD Partners are also worth considering,
+    since getting an early Track Lost due to getting distracted by the score isn't an issue, making it easier to achieve scores closer to the minimum threshold score.
+    </span>
 </p>
 
 <details><summary>Legacy Play+ map boosts
@@ -206,6 +208,7 @@ Estimated maximum chart constant = <span class="cc-estround" id="ccmaxrnd"></spa
     const errStpUDefault = 1;
     const errStpUHighLv = 0.5;
     const errStpUSpecial = 0;
+    const errStpUSealed = 0;
 
     function updateStpUError(e) {
         console.log(e);
@@ -215,6 +218,8 @@ Estimated maximum chart constant = <span class="cc-estround" id="ccmaxrnd"></spa
             errStpUInput.setAttribute('value', errStpUHighLv);
         } else {
             errStpUInput.setAttribute('value', errStpUDefault);
+        } else if (partnerStepInput.value == 50) {
+            errStpUInput.setAttribute('value', errStpUSealed);
         }
     }
 
