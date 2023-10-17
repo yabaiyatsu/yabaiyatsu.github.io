@@ -216,10 +216,10 @@ Estimated maximum chart constant = <span class="cc-estround" id="ccmaxrnd"></spa
             errStpUInput.setAttribute('value', errStpUSpecial);
         } else if (partnerLvInput.checked && !partnerNonmaxInput.checked) {
             errStpUInput.setAttribute('value', errStpUHighLv);
-        } else if {
-            errStpUInput.setAttribute('value', errStpUDefault);
         } else if (partnerStepInput.value == 50) {
             errStpUInput.setAttribute('value', errStpUSealed);
+        } else {
+            errStpUInput.setAttribute('value', errStpUDefault);
         }
     }
 
