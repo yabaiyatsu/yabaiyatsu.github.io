@@ -126,10 +126,12 @@ function calcScores() {
             row += `<td>${scoreDisp(scoremax-scoremin)}</td></tr>`
             ccRows.push(row);
         }
-        row = `\t\t<tr class="trlv"><td>${lv}</td>`
-        row += `<td>${scoreDisp(lvscoremin)} &ndash; ${scoreDisp(lvscoremax)}</td>`
-        row += `<td>${scoreDisp(lvscoremax-lvscoremin)}</td></tr>`
-        lvRows.push(row);
+        if (lvscoremax > lvscoremin) {
+            row = `\t\t<tr class="trlv"><td>${lv}</td>`
+            row += `<td>${scoreDisp(lvscoremin)} &ndash; ${scoreDisp(lvscoremax)}</td>`
+            row += `<td>${scoreDisp(lvscoremax-lvscoremin)}</td></tr>`
+            lvRows.push(row);
+        }
     }
     scorerowscc.innerHTML = ccRows.join('\n');
     scorerowslv.innerHTML = lvRows.join('\n');
