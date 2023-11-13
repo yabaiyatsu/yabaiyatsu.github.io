@@ -58,6 +58,7 @@ function scoreRange(goalmin, goalmax, stepstat, cc) {
         scoremin = scoreModToScore(prminsqrt**2 - cc);
     }
     let prmaxsqrt = (goalmax*50/(stepstat+1) - 2.5)/2.45;
+    console.log([goalmax, prmaxsqrt])
     if (prmaxsqrt < 0) {
         return false;
     }
@@ -67,6 +68,7 @@ function scoreRange(goalmin, goalmax, stepstat, cc) {
     } else {
         scoremax = scoreModToScore(smmax);
     }
+    console.log([scoremin, scoremax])
     if (scoremin > scoremax) {
         return false; 
     } else {
@@ -82,8 +84,8 @@ const errMsg = document.getElementById("calcerror");
 var wew = 0;
 
 function calcScores() {
-    var goalmin = parseInt(document.getElementById("input-goalmin").value);
-    var goalmax = parseInt(document.getElementById("input-goalmax").value);
+    var goalmin = parseFloat(document.getElementById("input-goalmin").value);
+    var goalmax = parseFloat(document.getElementById("input-goalmax").value);
     var ccmin = parseFloat(document.getElementById("input-ccmin").value);
     var ccmax = parseFloat(document.getElementById("input-ccmax").value);
     var stepstat = parseFloat(document.getElementById("input-partnerstep").value);
