@@ -12,8 +12,8 @@ window.addEventListener("load", declutterNotes);
 
 
 // generate radio groups for chart level
-const lvCCs = [ '1', '2', '3', '4', '5', '6', '7',
-                '8', '9', '9.7', '10', '10.7', '11', '12'];
+const lvCCs = [ '1', '2', '3', '4', '5', '6', '7', '7.7',
+                '8', '8.7', '9', '9.7', '10', '10.7', '11', '12'];
 
 const minScoreDiv = document.getElementById("input-lv");
 minScoreDiv.innerHTML = '\n\t' + lvCCs.map((lvcc) => `<div class="rb">\n`
@@ -129,13 +129,17 @@ function updateCCs() {
 
     let minccrnd = 0;
     let maxccrnd = 0;
-    if (mincc < 8) {
+    if (mincc < 7.5) {
         minccrnd = Math.ceil(mincc*2)/2;
+    } else if (mincc < 8) {
+        minccrnd = 7.8;
     } else {
         minccrnd = Math.ceil(mincc*10)/10;
     }
-    if (maxcc < 8) {
+    if (maxcc < 7.8) {
         maxccrnd = Math.floor(maxcc*2)/2;
+    } else if (maxcc < 8) {
+        maxccrnd = 7.8
     } else {
         maxccrnd = Math.floor(maxcc*10)/10;
     }
