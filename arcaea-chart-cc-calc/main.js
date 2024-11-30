@@ -13,7 +13,7 @@ window.addEventListener("load", declutterNotes);
 
 // generate radio groups for chart level
 const lvCCs = [ '1', '2', '3', '4', '5', '6', '7', '7.7',
-                '8', '8.7', '9', '9.7', '10', '10.7', '11', '12'];
+                '8', '8.7', '9', '9.7', '10', '10.7', '11', '11.9', '12'];
 
 const minScoreDiv = document.getElementById("input-lv");
 minScoreDiv.innerHTML = '\n\t' + lvCCs.map((lvcc) => `<div class="rb">\n`
@@ -29,7 +29,7 @@ function ccToLv(cc) {
     if (cc.includes('.')) {
         let baseLv = parseInt(cc);
         let lvDp = parseInt(cc.split('.')[0]);
-        if (lvDp >= 7) {
+        if ((baseLv <= 10 and lvDp >= 7) or (baseLv >= 11 and lvDp >= 9) {
             return parseInt(cc) + '+';
         } else {
             return cc;  
