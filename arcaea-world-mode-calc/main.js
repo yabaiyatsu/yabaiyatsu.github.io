@@ -14,7 +14,8 @@ const lvCCs = [
     ['9+', ['9.7', '9.8', '9.9']],
     ['10', ['10.0', '10.1', '10.2', '10.3', '10.4', '10.5', '10.6']],
     ['10+', ['10.7', '10.8', '10.9']],
-    ['11', ['11.0', '11.1', '11.2', '11.3', '11.4', '11.5']],
+    ['11', ['11.0', '11.1', '11.2', '11.3', '11.4', '11.5', '11.6', '11.7']],
+    ['11+', ['11.9']],
     ['12', ['12.0']]
     ];
 
@@ -130,7 +131,7 @@ function calcScores() {
             row += `<td>${scoreDisp(scoremax-scoremin)}</td></tr>`
             ccRows.push(row);
         }
-        if (lvscoremax > lvscoremin) {
+        if (lvscoremax > lvscoremin && lvsrs[0][0] >= ccmin) {
             row = `\t\t<tr class="trlv"><td>${lv}</td>`
             row += `<td>${scoreDisp(lvscoremin)} &ndash; ${scoreDisp(lvscoremax)}</td>`
             row += `<td>${scoreDisp(lvscoremax-lvscoremin)}</td></tr>`
